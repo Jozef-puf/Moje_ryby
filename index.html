@@ -47,7 +47,7 @@
         }
         
         .row { display: flex; gap: 8px; width: 100%; flex-wrap: wrap; /* Toto je kľúčová oprava */}
-        .row > div { flex: 1; }
+        .row > div { flex: 1; min-width: 150px; /* Ak je políčko užšie ako 150px, hodí ho do nového riadku */}
         
         button {
             width: 100%; padding: 12px; border-radius: 8px; border: none;
