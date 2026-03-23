@@ -7,7 +7,7 @@
     <!-- Ikona pre plochu iPhonu -->
     <link rel="apple-touch-icon" href="https://jozef-puf.github.io/Moje_ryby/Icon_ryby.png">
     <link rel="icon" type="image/png" href="https://jozef-puf.github.io/Moje_ryby/Icon_ryby.png">
-    <meta name="apple-mobile-web-app-title" content="MôjE Ryby">
+    <meta name="apple-mobile-web-app-title" content="Moje Ryby">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
@@ -26,7 +26,6 @@
             background-size: cover;
             color: #fff;
             overflow-x: hidden;
-            padding-bottom: 20px;
         }
         .container { padding: 10px; max-width: 500px; margin: auto; }
         .card {
@@ -43,10 +42,11 @@
         input, select {
             width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 6px;
             border: 1px solid #34495e; background: var(--input-bg); color: white; font-size: 16px;
-            appearance: none;
+            appearance: none; /* Lepší vzhľad na iOS */
         }
         
-        .row { display: flex; gap: 10px; width: 100%; }
+        /* Riadok len pre prvky, ktoré sa zmestia vedľa seba */
+        .row { display: flex; gap: 8px; width: 100%; }
         .row > div { flex: 1; }
         
         button {
@@ -66,6 +66,7 @@
         
         .revir-info { color: var(--accent); font-size: 0.8rem; margin: -8px 0 12px 0; font-style: italic; min-height: 1.1rem; }
         .stat-section { border-top: 1px solid rgba(255,255,255,0.1); margin-top: 20px; padding-top: 15px; }
+        
         .txt-small { font-size: 0.7rem; color: #bdc3c7; }
     </style>
 </head>
@@ -76,8 +77,8 @@
     <div class="card">
         <h3>📍 Moje revíry</h3>
         <div class="row">
-            <div><label>Číslo</label><input type="text" id="cfg-c" placeholder="2-1450"></div>
-            <div><label>Názov</label><input type="text" id="cfg-n" placeholder="VN Kráľová"></div>
+            <div><input type="text" id="cfg-c" placeholder="2-1450"></div>
+            <div><input type="text" id="cfg-n" placeholder="VN Kráľová"></div>
         </div>
         <button onclick="saveRevir()" style="background: #34495e; color: white; padding: 10px; font-size: 0.75rem;">Uložiť do databázy</button>
     </div>
@@ -86,26 +87,31 @@
     <div class="card">
         <h2>🎣 Zápis úlovku</h2>
         <label>Číslo revíru</label>
-        <input type="text" id="in-revir" list="list-reviry" placeholder="Zadajte číslo revíru..." oninput="showRevName()">
+        <input type="text" id="in-revir" list="list-reviry" placeholder="2-XXXX" oninput="showRevName()">
         <datalist id="list-reviry"></datalist>
         <div id="res-nazov" class="revir-info"></div>
 
-        <!-- Dátum a Ryba pod sebou kvôli iPhone prekrývaniu -->
-        <label>Dátum</label>
-        <input type="date" id="in-date">
+        <!-- OPRAVA: Dátum a Druh ryby sú teraz pod sebou, aby sa neprekrývali -->
+        <div>
+            <label>Dátum</label>
+            <input type="date" id="in-date">
+        </div>
         
-        <label>Druh ryby</label>
-        <select id="in-fish">
-            <option value="Kapor">Kapor</option>
-            <option value="Amur">Amur</option>
-            <option value="Zubáč">Zubáč</option>
-            <option value="Šťuka">Šťuka</option>
-            <option value="Sumec">Sumec</option>
-            <option value="Pstruh">Pstruh</option>
-            <option value="Ostatné">Ostatné</option>
-            <option value="BEZ ÚLOVKU">-- Iba dochádzka --</option>
-        </select>
+        <div>
+            <label>Druh ryby</label>
+            <select id="in-fish">
+                <option value="Kapor">Kapor</option>
+                <option value="Amur">Amur</option>
+                <option value="Zubáč">Zubáč</option>
+                <option value="Šťuka">Šťuka</option>
+                <option value="Sumec">Sumec</option>
+                <option value="Pstruh">Pstruh</option>
+                <option value="Ostatné">Ostatné</option>
+                <option value="BEZ ÚLOVKU">-- Iba dochádzka --</option>
+            </select>
+        </div>
 
+        <!-- Váha a kusy môžu zostať vedľa seba -->
         <div class="row">
             <div><label>Váha (kg)</label><input type="text" id="in-kg" placeholder="0,00" inputmode="decimal"></div>
             <div><label>Kusy (ks)</label><input type="number" id="in-ks" placeholder="0"></div>
@@ -120,7 +126,7 @@
         <div id="stat-sumar"></div>
         
         <div class="stat-section">
-            <h3>📜 Posledné zápisy</h3>
+            <h3>📜 Posledné zápisy (Zmazať)</h3>
             <div id="stat-list"></div>
         </div>
 
@@ -141,9 +147,7 @@
         const dl = document.getElementById('list-reviry');
         dl.innerHTML = "";
         Object.keys(reviry).forEach(c => {
-            let o = document.createElement('option');
-            o.value = c;
-            o.textContent = reviry[c]; // Pomáha mobilu zobraziť názov v ponuke
+            let o = document.createElement('option'); o.value = c;
             dl.appendChild(o);
         });
     }
@@ -155,7 +159,7 @@
             reviry[c] = n;
             localStorage.setItem('f_reviry', JSON.stringify(reviry));
             updateDatalist();
-            alert("Revír uložený.");
+            alert("Revír bol pridaný.");
             document.getElementById('cfg-c').value = ""; document.getElementById('cfg-n').value = "";
         }
     }
@@ -186,7 +190,7 @@
     }
 
     function deleteEntry(index) {
-        if(confirm("Vymazať riadok?")) {
+        if(confirm("Naozaj vymazať?")) {
             data.splice(index, 1);
             localStorage.setItem('f_data', JSON.stringify(data));
             render();
@@ -194,7 +198,7 @@
     }
 
     function clearData() {
-        if(confirm("Vymazať všetko?")) {
+        if(confirm("Všetky dáta budú zmazané!")) {
             localStorage.clear();
             location.reload();
         }
@@ -204,7 +208,7 @@
         const outSum = document.getElementById('stat-sumar');
         const outList = document.getElementById('stat-list');
         if(data.length === 0) { 
-            outSum.innerHTML = "<p class='txt-small'>Prázdny denník.</p>"; 
+            outSum.innerHTML = "<p class='txt-small'>Denník je prázdny.</p>"; 
             outList.innerHTML = "";
             return;
         }
@@ -241,7 +245,7 @@
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.setAttribute("download", "dennik.csv");
+        link.setAttribute("download", "rybarsky_dennik.csv");
         link.click();
     }
 </script>
