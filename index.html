@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Rybársky Denník - Sumec Fix</title>
-    <!-- Ikona pre plochu iPhonu -->
-    <link rel="apple-touch-icon" href="https://jozef-puf.github.io/Moje_ryby/Icon_ryby.png">
-    <link rel="icon" type="image/png" href="https://jozef-puf.github.io/Moje_ryby/Icon_ryby.png">
-    <meta name="apple-mobile-web-app-title" content="Moje Ryby">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- Ikona pre plochu iPhonu -->
+<link rel="apple-touch-icon" href="https://jozef-puf.github.io/Moje_ryby/Icon_ryby.png">
+<!-- Názov aplikácie pod ikonou -->
+<meta name="apple-mobile-web-app-title" content="Moje Ryby">
+<!-- Skrytie lišty prehliadača pre vzhľad skutočnej appky -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <style>
         * { box-sizing: border-box; }
@@ -40,17 +41,15 @@
         label { display: block; font-size: 0.7rem; margin-bottom: 4px; color: #bdc3c7; }
         
         input, select {
-            width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 6px;
+            width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 6px;
             border: 1px solid #34495e; background: var(--input-bg); color: white; font-size: 16px;
-            appearance: none; /* Lepší vzhľad na iOS */
         }
         
-        /* Riadok len pre prvky, ktoré sa zmestia vedľa seba */
         .row { display: flex; gap: 8px; width: 100%; }
         .row > div { flex: 1; }
         
         button {
-            width: 100%; padding: 12px; border-radius: 8px; border: none;
+            width: 100%; padding: 14px; border-radius: 8px; border: none;
             font-weight: bold; cursor: pointer; text-transform: uppercase;
         }
         .btn-add { background: var(--accent); color: #121c26; margin-top: 5px; }
@@ -68,12 +67,13 @@
         .stat-section { border-top: 1px solid rgba(255,255,255,0.1); margin-top: 20px; padding-top: 15px; }
         
         .txt-small { font-size: 0.7rem; color: #bdc3c7; }
+        .txt-accent { color: var(--accent); font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- REVÍRY -->
+    <!-- REVíRY -->
     <div class="card">
         <h3>📍 Moje revíry</h3>
         <div class="row">
@@ -91,27 +91,23 @@
         <datalist id="list-reviry"></datalist>
         <div id="res-nazov" class="revir-info"></div>
 
-        <!-- OPRAVA: Dátum a Druh ryby sú teraz pod sebou, aby sa neprekrývali -->
-        <div>
-            <label>Dátum</label>
-            <input type="date" id="in-date">
-        </div>
-        
-        <div>
-            <label>Druh ryby</label>
-            <select id="in-fish">
-                <option value="Kapor">Kapor</option>
-                <option value="Amur">Amur</option>
-                <option value="Zubáč">Zubáč</option>
-                <option value="Šťuka">Šťuka</option>
-                <option value="Sumec">Sumec</option>
-                <option value="Pstruh">Pstruh</option>
-                <option value="Ostatné">Ostatné</option>
-                <option value="BEZ ÚLOVKU">-- Iba dochádzka --</option>
-            </select>
+        <div class="row">
+            <div><label>Dátum</label><input type="date" id="in-date"></div>
+            <div>
+                <label>Druh ryby</label>
+                <select id="in-fish">
+                    <option value="Kapor">Kapor</option>
+                    <option value="Amur">Amur</option>
+                    <option value="Zubáč">Zubáč</option>
+                    <option value="Šťuka">Šťuka</option>
+                    <option value="Sumec">Sumec</option>
+                    <option value="Pstruh">Pstruh</option>
+                    <option value="Ostatné">Ostatné</option>
+                    <option value="BEZ ÚLOVKU">-- Iba dochádzka --</option>
+                </select>
+            </div>
         </div>
 
-        <!-- Váha a kusy môžu zostať vedľa seba -->
         <div class="row">
             <div><label>Váha (kg)</label><input type="text" id="in-kg" placeholder="0,00" inputmode="decimal"></div>
             <div><label>Kusy (ks)</label><input type="number" id="in-ks" placeholder="0"></div>
@@ -139,6 +135,7 @@
     let reviry = JSON.parse(localStorage.getItem('f_reviry')) || {};
     let data = JSON.parse(localStorage.getItem('f_data')) || [];
 
+    // Inicializácia pri otvorení
     updateDatalist();
     render();
     document.getElementById('in-date').valueAsDate = new Date();
@@ -185,22 +182,16 @@
 
         localStorage.setItem('f_data', JSON.stringify(data));
         render();
+        // Reset polí
         document.getElementById('in-kg').value = "";
         document.getElementById('in-ks').value = "";
     }
 
     function deleteEntry(index) {
-        if(confirm("Naozaj vymazať?")) {
+        if(confirm("Naozaj chcete tento riadok vymazať?")) {
             data.splice(index, 1);
             localStorage.setItem('f_data', JSON.stringify(data));
             render();
-        }
-    }
-
-    function clearData() {
-        if(confirm("Všetky dáta budú zmazané!")) {
-            localStorage.clear();
-            location.reload();
         }
     }
 
@@ -208,46 +199,58 @@
         const outSum = document.getElementById('stat-sumar');
         const outList = document.getElementById('stat-list');
         if(data.length === 0) { 
-            outSum.innerHTML = "<p class='txt-small'>Denník je prázdny.</p>"; 
+            outSum.innerHTML = "<p class='txt-small'>Žiadne údaje v denníku.</p>"; 
             outList.innerHTML = "";
-            return;
+            return; 
         }
 
-        let stats = {};
-        data.forEach(x => {
-            let k = x.rev + " " + x.naz;
-            if(!stats[k]) stats[k] = { dni: new Set(), kg: 0, ks: 0 };
-            stats[k].dni.add(x.dat);
-            stats[k].kg += x.kg;
-            stats[k].ks += x.ks;
+        // 1. VÝPOČET ŠTATISTIKY (PRE LÍSTOK)
+        let vists = {}, f_stats = {};
+        data.forEach(z => {
+            if(!vists[z.rev]) vists[z.rev] = new Set();
+            vists[z.rev].add(z.dat);
+            if(z.ryb !== "BEZ ÚLOVKU") {
+                if(!f_stats[z.ryb]) f_stats[z.ryb] = {ks:0, kg:0};
+                f_stats[z.ryb].ks += z.ks;
+                f_stats[z.ryb].kg += z.kg;
+            }
         });
 
-        let h = "<table><tr><th>Revír</th><th>Dni</th><th>kg</th><th>ks</th></tr>";
-        for(let r in stats) {
-            h += `<tr><td>${r}</td><td>${stats[r].dni.size}</td><td>${stats[r].kg.toFixed(2)}</td><td>${stats[r].ks}</td></tr>`;
-        }
+        let h = "<table><tr><th>Revír</th><th>Dochádzky</th></tr>";
+        Object.keys(vists).forEach(k => h += `<tr><td class='txt-accent'>${k}</td><td>${vists[k].size}</td></tr>`);
+        h += "</table><br><table><tr><th>Ryba</th><th>Ks</th><th>Kg</th></tr>";
+        Object.keys(f_stats).forEach(f => h += `<tr><td>${f}</td><td>${f_stats[f].ks}</td><td>${f_stats[f].kg.toFixed(2).replace(".",",")}</td></tr>`);
         outSum.innerHTML = h + "</table>";
 
-        let l = "<table><tr><th>Dátum</th><th>Ryba</th><th>kg</th><th></th></tr>";
-        data.slice().reverse().forEach((x, i) => {
-            let realIdx = data.length - 1 - i;
-            l += `<tr><td>${x.dat.split('-').reverse().slice(0,2).join('.')}</td><td>${x.ryb}</td><td>${x.kg}</td><td><button class="btn-del" onclick="deleteEntry(${realIdx})">X</button></td></tr>`;
+        // 2. ZOZNAM PRE MAZANIE (S REVÍROM)
+        let l = "<table><tr><th>Dátum</th><th>Revír</th><th>Ryba</th><th></th></tr>";
+        data.slice().reverse().forEach((z, i) => {
+            const realIdx = data.length - 1 - i;
+            l += `<tr>
+                <td class='txt-small'>${z.dat.split('-').reverse().join('.')}</td>
+                <td class='txt-accent' style='font-size:0.7rem'>${z.rev}</td>
+                <td>${z.ryb}</td>
+                <td style='text-align:right'><button class="btn-del" onclick="deleteEntry(${realIdx})">X</button></td>
+            </tr>`;
         });
         outList.innerHTML = l + "</table>";
     }
 
     function exportCSV() {
-        if(data.length === 0) return;
-        let csv = "Datum;Revir;Nazov;Ryba;kg;ks\n";
-        data.forEach(x => {
-            csv += `${x.dat};${x.rev};${x.naz};${x.ryb};${x.kg.toString().replace(".", ",")};${x.ks}\n`;
+        if(data.length === 0) return alert("Zoznam je prázdny.");
+        let csv = "\uFEFFDátum;Revír;Názov;Ryba;Váha_Kg;Kusy\n";
+        data.forEach(z => {
+            csv += `${z.dat.split('-').reverse().join('.')};${z.rev};${z.naz};${z.ryb};${z.kg.toString().replace(".", ",")};${z.ks}\n`;
         });
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.setAttribute("download", "rybarsky_dennik.csv");
-        link.click();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = "RybarskyDennik.csv";
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
     }
+
+    function clearData() { if(confirm("Pozor! Toto vymaže všetky úlovky natrvalo. Pokračovať?")) { localStorage.removeItem('f_data'); data = []; render(); } }
 </script>
+
 </body>
 </html>
