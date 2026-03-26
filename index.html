@@ -255,6 +255,13 @@
 
     function clearData() { if(confirm("Pozor! Toto vymaže všetky úlovky natrvalo. Pokračovať?")) { localStorage.removeItem('f_data'); data = []; render(); } }
 </script>
-
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('Service Worker zaregistrovaný!', reg))
+        .catch(err => console.log('Chyba pri registrácii:', err));
+    });
+  }
+</script>
 </body>
 </html>
